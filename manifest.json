@@ -1,7 +1,7 @@
 {
   "name": "Money HQ",
   "short_name": "Money HQ",
-  "start_url": "./money-hq.html",
+  "start_url": "./moneyhq.html",
   "display": "standalone",
   "background_color": "#F6F1FC",
   "theme_color": "#8B5FBF",
