@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Money HQ</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Money HQ">
+<meta name="theme-color" content="#8B5FBF">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Quicksand:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F6F1FC;
+    --lilac:#8B5FBF;
+    --wisteria:#A78BDB;
+    --plum:#6C4AB6;
+    --mint:#5FBFA0;
+    --coral:#E0678A;
+    --ink:#2E1B3D;
+    --white:#FFFFFF;
+    --line:#DCD0EE;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Quicksand', sans-serif;
+    background-color:var(--bg);
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cg fill='none' stroke='%238B5FBF' stroke-opacity='0.08' stroke-width='2'%3E%3Ccircle cx='30' cy='30' r='13'/%3E%3Cpath d='M20 30h20M30 20v20'/%3E%3Cpath d='M130 40q10 -18 20 0t20 0'/%3E%3Cpath d='M60 160q15 10 30 0t30 0'/%3E%3Crect x='150' y='125' width='24' height='17' rx='4'/%3E%3C/g%3E%3C/svg%3E");
+    background-repeat:repeat;
+    color:var(--ink);
+    min-height:100vh;
+    padding-bottom:84px;
+  }
+  h1,h2,h3,.fredoka{font-family:'Fredoka', sans-serif; font-weight:600;}
+  header{text-align:center; padding:20px 12px 6px;}
+  header h1{font-size:1.9rem; margin:0; color:var(--lilac);}
+  header p{margin:2px 0 0; font-size:0.85rem; opacity:0.6;}
+  main{max-width:480px; margin:0 auto; padding:10px 14px 20px;}
+
+  .card{
+    background:var(--white);
+    border:1.5px solid var(--line);
+    border-radius:18px;
+    padding:20px;
+    margin-bottom:14px;
+  }
+  .card h2{margin:0 0 12px; font-size:1.05rem; color:var(--lilac); letter-spacing:0.2px;}
+
+  .total-card{text-align:center; padding:26px 20px;}
+  .total-label{font-size:0.85rem; opacity:0.6; margin-bottom:4px;}
+  .total-amount{font-family:'Fredoka',sans-serif; font-size:2.4rem; color:var(--ink);}
+  .total-sub{font-size:0.75rem; opacity:0.5; margin-top:6px;}
+
+  .jars{display:flex; gap:14px; justify-content:center; margin:4px 0 2px;}
+  .jar-wrap{text-align:center; width:110px;}
+  .jar{
+    position:relative; width:84px; height:104px;
+    border:1.5px solid var(--line); border-radius:8px 8px 18px 18px;
+    background:var(--bg); overflow:hidden; margin:0 auto 8px;
+  }
+  .jar-fill{position:absolute; bottom:0; left:0; right:0; transition:height 0.5s ease;}
+  .jar-label{font-size:0.85rem; opacity:0.65;}
+  .jar-amount{font-family:'Fredoka',sans-serif; font-size:1rem;}
+
+  .accounts-list{display:flex; flex-direction:column; gap:8px;}
+  .account-row{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:10px 4px; border-bottom:1px solid var(--line);
+  }
+  .account-row:last-child{border-bottom:none;}
+  .account-tag{font-size:0.7rem; opacity:0.5; margin-left:6px;}
+
+  .reconcile{text-align:center; font-size:0.8rem; margin-top:10px; padding:8px; border-radius:10px;}
+  .reconcile.ok{background:rgba(95,191,160,0.15); color:#3B8A6E;}
+  .reconcile.bad{background:rgba(224,103,138,0.15); color:#B8386A;}
+
+  .cat-bar-row{margin-bottom:10px;}
+  .cat-bar-label{display:flex; justify-content:space-between; font-size:0.85rem; margin-bottom:4px;}
+  .cat-bar-track{background:var(--bg); border-radius:8px; height:10px; overflow:hidden;}
+  .cat-bar-fill{height:100%; background:var(--plum);}
+
+  .nav{
+    position:fixed; bottom:0; left:0; right:0;
+    background:var(--white); border-top:1.5px solid var(--line);
+    display:flex; justify-content:space-around; padding:10px 4px; z-index:10;
+  }
+  .nav button{
+    background:none; border:none; font-family:'Fredoka',sans-serif; font-size:0.85rem;
+    color:var(--ink); opacity:0.45; padding:6px 8px; cursor:pointer;
+  }
+  .nav button.active{opacity:1; color:var(--lilac);}
+
+  .seg{display:flex; border:1.5px solid var(--line); border-radius:12px; overflow:hidden; margin-bottom:14px;}
+  .seg button{flex:1; padding:10px; border:none; background:var(--white); font-family:'Quicksand'; font-weight:700; cursor:pointer; font-size:0.9rem; color:var(--ink); opacity:0.5;}
+  .seg button.on{background:var(--lilac); color:white; opacity:1;}
+
+  label{display:block; font-size:0.8rem; font-weight:700; margin:12px 0 5px; opacity:0.75;}
+  input, select, textarea{
+    width:100%; padding:11px; border:1.5px solid var(--line); border-radius:10px;
+    font-family:'Quicksand'; font-size:1rem; background:var(--bg); color:var(--ink);
+  }
+  textarea{min-height:70px; resize:vertical;}
+
+  .fund-toggle{display:flex; gap:8px; margin-top:6px;}
+  .fund-toggle button{
+    flex:1; padding:10px; border:1.5px solid var(--line); border-radius:10px;
+    font-family:'Fredoka',sans-serif; background:var(--white); cursor:pointer; color:var(--ink);
+  }
+  .fund-toggle button.on-personal{background:var(--wisteria); color:white; border-color:var(--wisteria);}
+  .fund-toggle button.on-lcl{background:var(--plum); color:white; border-color:var(--plum);}
+
+  .btn{
+    width:100%; padding:13px; border:none; border-radius:12px;
+    font-family:'Fredoka',sans-serif; font-size:1rem; background:var(--lilac); color:white;
+    cursor:pointer; margin-top:16px;
+  }
+  .btn.secondary{background:var(--white); color:var(--lilac); border:1.5px solid var(--lilac);}
+  .btn.small{width:auto; padding:9px 16px; font-size:0.85rem; margin-top:0;}
+  .btn.danger{background:var(--coral);}
+  .btn.ghost{background:none; color:var(--ink); opacity:0.55; text-decoration:underline; padding:8px;}
+
+  .chips{display:flex; gap:6px; flex-wrap:wrap; margin-top:6px;}
+  .chip{
+    border:1.5px solid var(--line); background:var(--white); border-radius:20px;
+    padding:6px 12px; font-size:0.8rem; cursor:pointer; color:var(--ink);
+  }
+
+  .txn-item{
+    padding:10px 2px; border-bottom:1px solid var(--line);
+    display:flex; justify-content:space-between; align-items:center; gap:6px;
+  }
+  .txn-item:last-child{border-bottom:none;}
+  .txn-left{flex:1;}
+  .txn-cat{font-weight:700; font-size:0.95rem;}
+  .txn-meta{font-size:0.75rem; opacity:0.6;}
+  .txn-amt{font-family:'Fredoka',sans-serif; font-size:1rem; white-space:nowrap;}
+  .tag-pill{
+    display:inline-block; font-size:0.65rem; padding:2px 8px; border-radius:20px;
+    margin-left:6px; font-weight:700; color:white;
+  }
+  .warn-flag{color:var(--coral); font-size:0.7rem; margin-left:4px;}
+  .txn-actions{display:flex; gap:2px;}
+
+  .filters{display:flex; gap:8px; margin-bottom:10px;}
+  .filters select{width:auto; flex:1;}
+  .empty-msg{text-align:center; opacity:0.5; padding:24px 6px; font-size:0.9rem;}
+  .parsed-box{background:rgba(95,191,160,0.12); border:1px dashed var(--mint); border-radius:12px; padding:12px; margin-top:10px; font-size:0.85rem;}
+  .del-x, .edit-p{background:none; border:none; font-size:0.95rem; cursor:pointer; padding:4px; opacity:0.55;}
+  .del-x{color:var(--coral);}
+  .edit-p{color:var(--lilac);}
+  .editing-banner{background:rgba(139,95,191,0.12); border:1px solid var(--lilac); border-radius:12px; padding:10px 12px; font-size:0.85rem; margin-bottom:14px; display:flex; justify-content:space-between; align-items:center;}
+</style>
+</head>
+<body>
+<header>
+  <h1>Money HQ</h1>
+  <p>Personal & LCL, always tallying</p>
+</header>
+<main id="content">Loading...</main>
+<nav class="nav">
+  <button data-tab="dashboard" class="active">Home</button>
+  <button data-tab="add">Add</button>
+  <button data-tab="history">History</button>
+  <button data-tab="settings">Settings</button>
+</nav>
+
+<script>
+const EXPENSE_CATS = [
+  'Transport','Food','Drinks','Water','Airtime','Prepaid (Electricity)','Groceries',
+  'Personal Shopping','Delivery Fee','Business','Fuel','Lab Phone Transfer','Fees','Other'
+];
+const INCOME_CATS = ['Business Fee Received','Salary','Gift/Transfer In','Refund','Opening Balance','Other'];
+
+const CATEGORY_KEYWORDS = {
+  'Transport': ['uber','bolt','yango','taxi','trotro'],
+  'Airtime': ['airtime','credit','bundle','data'],
+  'Prepaid (Electricity)': ['ecg','prepaid','electricity'],
+  'Water': ['water','gwcl'],
+  'Food': ['food','restaurant','kfc'],
+  'Groceries': ['grocery','shoprite','market'],
+  'Business': ['business','client','supplier','fabric','packaging']
+};
+
+const DEFAULT_DATA = {
+  accounts: [
+    {id:'acc_8188', name:'\u2022\u2022\u20228188', type:'spendable'},
+    {id:'acc_save', name:'Yellow Save', type:'savings'}
+  ],
+  transactions: [],
+  sheetUrl: '',
+  lastUsed: {account:'acc_8188', fund:'personal'}
+};
+
+let DATA = null;
+let currentTab = 'dashboard';
+let addType = 'expense';
+let addFund = 'personal';
+let editingTxnId = null;
+
+async function loadData(){
+  try{
+    const res = await window.storage.get('moneyhq-data');
+    DATA = res ? JSON.parse(res.value) : JSON.parse(JSON.stringify(DEFAULT_DATA));
+    if(!DATA.lastUsed) DATA.lastUsed = {account:'acc_8188', fund:'personal'};
+    DATA.accounts.forEach(a=>{ if(!a.type) a.type = (a.id==='acc_save') ? 'savings' : 'spendable'; });
+  }catch(e){
+    DATA = JSON.parse(JSON.stringify(DEFAULT_DATA));
+  }
+  addFund = DATA.lastUsed.fund || 'personal';
+  render();
+}
+async function saveData(){
+  try{
+    await window.storage.set('moneyhq-data', JSON.stringify(DATA));
+  }catch(e){
+    console.error('save failed', e);
+    alert("Couldn't save \u2014 check connection and try again.");
+  }
+}
+
+function uid(){return 't_'+Date.now()+'_'+Math.floor(Math.random()*10000);}
+function fmt(n){return '\u20B5'+(Math.round(n*100)/100).toLocaleString('en-US',{minimumFractionDigits:2, maximumFractionDigits:2});}
+function nowLocalInputValue(){
+  const d = new Date();
+  d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+  return d.toISOString().slice(0,16);
+}
+function toLocalInputValue(isoStr){
+  const d = new Date(isoStr);
+  d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+  return d.toISOString().slice(0,16);
+}
+
+function getAccountBalance(accId){
+  let bal=0;
+  DATA.transactions.forEach(t=>{
+    if(t.type==='income' && t.account===accId) bal+=Number(t.amount);
+    if(t.type==='expense' && t.account===accId) bal-= (Number(t.amount)+Number(t.fee||0));
+    if(t.type==='transfer'){
+      if(t.account===accId) bal-= (Number(t.amount)+Number(t.fee||0));
+      if(t.toAccount===accId) bal+= Number(t.amount);
+    }
+  });
+  return bal;
+}
+function getFundBalance(fund){
+  let bal=0;
+  DATA.transactions.forEach(t=>{
+    if(t.fund!==fund) return;
+    if(t.type==='income') bal+=Number(t.amount);
+    if(t.type==='expense') bal-= (Number(t.amount)+Number(t.fee||0));
+    if(t.type==='transfer') bal-= Number(t.fee||0);
+  });
+  return bal;
+}
+function getTotalBalance(){
+  return DATA.accounts.reduce((s,a)=>s+getAccountBalance(a.id),0);
+}
+function getSpendableBalance(){
+  return DATA.accounts.filter(a=>a.type==='spendable').reduce((s,a)=>s+getAccountBalance(a.id),0);
+}
+
+function render(){
+  document.querySelectorAll('.nav button').forEach(b=>{
+    b.classList.toggle('active', b.dataset.tab===currentTab);
+  });
+  const el = document.getElementById('content');
+  if(currentTab==='dashboard') el.innerHTML = renderDashboard();
+  if(currentTab==='add') el.innerHTML = renderAdd();
+  if(currentTab==='history') el.innerHTML = renderHistory();
+  if(currentTab==='settings') el.innerHTML = renderSettings();
+  attachHandlers();
+}
+
+function renderDashboard(){
+  const personal = getFundBalance('personal');
+  const lcl = getFundBalance('lcl');
+  const spendable = getSpendableBalance();
+  const cap = Math.max(personal, lcl, 100) * 1.3;
+  const pFill = Math.max(0, Math.min(100, (personal/cap)*100));
+  const lFill = Math.max(0, Math.min(100, (lcl/cap)*100));
+  const total = getTotalBalance();
+  const diff = Math.abs(total - (personal+lcl));
+  const reconcileOk = diff < 0.01;
+
+  const now = new Date();
+  const monthKey = now.getFullYear()+'-'+now.getMonth();
+  const spendByCat = {};
+  let monthTotal = 0;
+  DATA.transactions.forEach(t=>{
+    if(t.type!=='expense') return;
+    const d = new Date(t.date);
+    if((d.getFullYear()+'-'+d.getMonth())!==monthKey) return;
+    const amt = Number(t.amount)+Number(t.fee||0);
+    spendByCat[t.category] = (spendByCat[t.category]||0) + amt;
+    monthTotal += amt;
+  });
+  const catRows = Object.entries(spendByCat).sort((a,b)=>b[1]-a[1]).map(([cat,amt])=>{
+    const pct = monthTotal ? Math.round((amt/monthTotal)*100) : 0;
+    return '<div class="cat-bar-row"><div class="cat-bar-label"><span>'+cat+'</span><span>'+fmt(amt)+'</span></div><div class="cat-bar-track"><div class="cat-bar-fill" style="width:'+pct+'%"></div></div></div>';
+  }).join('') || '<div class="empty-msg">No spending logged this month yet</div>';
+
+  const recentTxns = [...DATA.transactions].sort((a,b)=>new Date(b.date)-new Date(a.date)).slice(0,5);
+
+  return `
+  <div class="card total-card">
+    <div class="total-label">Available to spend</div>
+    <div class="total-amount">${fmt(spendable)}</div>
+    <div class="total-sub">from your spendable accounts \u2014 savings not included</div>
+  </div>
+
+  <div class="card">
+    <h2>Your Jars</h2>
+    <div class="jars">
+      <div class="jar-wrap">
+        <div class="jar"><div class="jar-fill" style="height:${pFill}%; background:var(--wisteria);"></div></div>
+        <div class="jar-label">Personal</div>
+        <div class="jar-amount">${fmt(personal)}</div>
+      </div>
+      <div class="jar-wrap">
+        <div class="jar"><div class="jar-fill" style="height:${lFill}%; background:var(--plum);"></div></div>
+        <div class="jar-label">LCL</div>
+        <div class="jar-amount">${fmt(lcl)}</div>
+      </div>
+    </div>
+    <div class="reconcile ${reconcileOk?'ok':'bad'}">
+      ${reconcileOk ? 'Funds tally with accounts' : 'Off by '+fmt(diff)+' \u2014 check a recent entry'}
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Accounts</h2>
+    <div class="accounts-list">
+      ${DATA.accounts.map(a=>'<div class="account-row"><span>'+a.name+(a.type==='savings'?'<span class="account-tag">savings</span>':'')+'</span><strong>'+fmt(getAccountBalance(a.id))+'</strong></div>').join('')}
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>This Month's Spending</h2>
+    ${catRows}
+  </div>
+
+  <div class="card">
+    <h2>Recent</h2>
+    ${recentTxns.length ? recentTxns.map(txnRow).join('') : '<div class="empty-msg">Nothing logged yet \u2014 tap Add to start</div>'}
+  </div>
+  `;
+}
+
+function txnRow(t){
+  const acc = DATA.accounts.find(a=>a.id===t.account);
+  const toAcc = t.toAccount ? DATA.accounts.find(a=>a.id===t.toAccount) : null;
+  const sign = t.type==='income' ? '+' : '\u2212';
+  const color = t.type==='income' ? 'var(--mint)' : (t.type==='transfer' ? 'var(--ink)' : 'var(--coral)');
+  const total = Number(t.amount) + (t.type!=='income' ? Number(t.fee||0) : 0);
+  const dt = new Date(t.date);
+  const dateStr = dt.toLocaleDateString('en-GB',{day:'numeric',month:'short'}) + ' ' + dt.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+  const fundColor = t.fund==='lcl' ? 'var(--plum)' : 'var(--wisteria)';
+  let warn = '';
+  if(t.balanceCheck && Math.abs(t.balanceCheck.diff) > 0.01){
+    warn = '<span class="warn-flag" title="MoMo balance did not match">\u26A0 off by '+fmt(Math.abs(t.balanceCheck.diff))+'</span>';
+  }
+  return `<div class="txn-item">
+    <div class="txn-left">
+      <div class="txn-cat">${t.category}${t.type!=='transfer' ? '<span class="tag-pill" style="background:'+fundColor+'">'+(t.fund==='lcl'?'LCL':'Personal')+'</span>' : ''}${warn}</div>
+      <div class="txn-meta">${dateStr} \u00B7 ${acc?acc.name:''}${toAcc?(' \u2192 '+toAcc.name):''}${t.fee?(' \u00B7 fee '+fmt(t.fee)):''}${t.note?(' \u00B7 '+t.note):''}</div>
+    </div>
+    <div class="txn-amt" style="color:${color}">${sign}${fmt(total)}</div>
+    <div class="txn-actions">
+      <button class="edit-p" data-edit="${t.id}">\u270E</button>
+      <button class="del-x" data-del="${t.id}">\u2715</button>
+    </div>
+  </div>`;
+}
+
+function getFrequentNotes(){
+  const counts = {};
+  DATA.transactions.forEach(t=>{
+    if(t.note){ counts[t.note] = (counts[t.note]||0)+1; }
+  });
+  return Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,6).map(e=>e[0]);
+}
+
+function renderAdd(){
+  const editTxn = editingTxnId ? DATA.transactions.find(t=>t.id===editingTxnId) : null;
+  const cats = addType==='income' ? INCOME_CATS : EXPENSE_CATS;
+  const accOptions = (selected)=>DATA.accounts.map(a=>'<option value="'+a.id+'"'+(a.id===selected?' selected':'')+'>'+a.name+'</option>').join('');
+  const defaultAcc = editTxn ? editTxn.account : (DATA.lastUsed.account || DATA.accounts[0].id);
+  const defaultToAcc = editTxn ? editTxn.toAccount : null;
+  const chips = getFrequentNotes();
+  const dateVal = editTxn ? toLocalInputValue(editTxn.date) : nowLocalInputValue();
+  const catOptions = cats.map(c=>'<option value="'+c+'"'+(editTxn && editTxn.category===c?' selected':'')+'>'+c+'</option>').join('');
+
+  return `
+  ${editTxn ? '<div class="editing-banner"><span>Editing a past transaction</span><button class="btn small ghost" id="cancelEditBtn">Cancel</button></div>' : ''}
+
+  ${!editTxn ? `
+  <div class="card">
+    <h2>Paste a MoMo message</h2>
+    <textarea id="smsBox" placeholder="Paste the mobile money SMS here..."></textarea>
+    <button class="btn secondary" id="parseBtn">Parse it</button>
+    <div id="parseResult"></div>
+  </div>
+  ` : ''}
+
+  <div class="card">
+    <h2>${editTxn ? 'Edit Transaction' : 'Log a Transaction'}</h2>
+    <div class="seg">
+      <button class="${addType==='income'?'on':''}" data-type="income">Income</button>
+      <button class="${addType==='expense'?'on':''}" data-type="expense">Expense</button>
+      <button class="${addType==='transfer'?'on':''}" data-type="transfer">Transfer</button>
+    </div>
+
+    <label>Whose money is this?</label>
+    <div class="fund-toggle">
+      <button class="${addFund==='personal'?'on-personal':''}" data-fund="personal">Personal</button>
+      <button class="${addFund==='lcl'?'on-lcl':''}" data-fund="lcl">LCL</button>
+    </div>
+
+    ${addType==='transfer' ? `
+      <label>From account</label>
+      <select id="fromAcc">${accOptions(defaultAcc)}</select>
+      <label>To account</label>
+      <select id="toAcc">${accOptions(defaultToAcc)}</select>
+    ` : `
+      <label>Account</label>
+      <select id="fromAcc">${accOptions(defaultAcc)}</select>
+      <label>Category</label>
+      <select id="category">${catOptions}</select>
+    `}
+
+    <label>Amount (\u20B5)</label>
+    <input type="number" inputmode="decimal" id="amount" value="${editTxn?editTxn.amount:''}" placeholder="0.00">
+
+    ${addType!=='income' ? '<label>Fee charged, if any (\u20B5)</label><input type="number" inputmode="decimal" id="fee" value="'+(editTxn&&editTxn.fee?editTxn.fee:'')+'" placeholder="0.00">' : ''}
+
+    <label>Date & time</label>
+    <input type="datetime-local" id="txnDate" value="${dateVal}">
+
+    <label>Note (optional)</label>
+    <input type="text" id="note" value="${editTxn&&editTxn.note?editTxn.note.replace(/"/g,'&quot;'):''}" placeholder="e.g. Uber to work">
+    ${!editTxn && chips.length ? '<div class="chips">'+chips.map(c=>'<button type="button" class="chip" data-chip="'+c.replace(/"/g,'&quot;')+'">'+c+'</button>').join('')+'</div>' : ''}
+
+    <input type="hidden" id="statedBalance" value="">
+    <button class="btn" id="saveTxnBtn">${editTxn ? 'Update Transaction' : 'Save Transaction'}</button>
+  </div>
+  `;
+}
+
+function guessCategory(referenceText){
+  if(!referenceText) return null;
+  const lower = referenceText.toLowerCase();
+  for(const [cat, keywords] of Object.entries(CATEGORY_KEYWORDS)){
+    if(keywords.some(k=>lower.includes(k))) return cat;
+  }
+  return null;
+}
+
+function parseMomoSMS(text){
+  const result = {amount:null, fee:null, balance:null, direction:null, reference:null, name:null};
+  const t = text.replace(/GH\u00A2|GHC|GH\u20B5/gi,'GHS');
+
+  if(/received|credited/i.test(t)) result.direction='income';
+  else if(/sent|payment|paid|withdraw|debited|purchase/i.test(t)) result.direction='expense';
+
+  const amtRegex = /GHS\s?([\d,]+\.?\d*)/gi;
+  let m; const found=[];
+  while((m = amtRegex.exec(t)) !== null){
+    found.push({value: parseFloat(m[1].replace(/,/g,'')), index: m.index});
+  }
+  found.forEach(f=>{
+    const before = t.substring(Math.max(0,f.index-25), f.index).toLowerCase();
+    if(before.includes('fee')) result.fee = f.value;
+    else if(before.includes('balance') || before.includes('bal')) { if(result.balance===null) result.balance = f.value; }
+    else if(result.amount===null) result.amount = f.value;
+  });
+  if(result.amount===null && found.length) result.amount = found[0].value;
+
+  if(result.fee===null){
+    const feeFallback = t.match(/(?:TRANSACTION FEE|FEE)[:\s]+([\d.]+)/i);
+    if(feeFallback) result.fee = parseFloat(feeFallback[1]);
+  }
+
+  const refMatch = t.match(/Reference:\s*([^.]+)\./i);
+  if(refMatch) result.reference = refMatch[1].trim();
+
+  const nameMatch = t.match(/(?:to|from)\s+([A-Z][A-Z\s]{2,40}?)\s+Current Balance/i) || t.match(/(?:to|from)\s+([A-Z][A-Z\s]{2,40}?)\s+has been/i);
+  if(nameMatch) result.name = nameMatch[1].trim();
+
+  return result;
+}
+
+function renderHistory(){
+  const items = [...DATA.transactions].sort((a,b)=>new Date(b.date)-new Date(a.date));
+  return `
+  <div class="card">
+    <h2>History</h2>
+    ${items.length ? items.map(txnRow).join('') : '<div class="empty-msg">No transactions yet</div>'}
+  </div>
+  `;
+}
+
+function renderSettings(){
+  return `
+  <div class="card">
+    <h2>Accounts</h2>
+    <div class="accounts-list">
+      ${DATA.accounts.map(a=>'<div class="account-row"><span>'+a.name+(a.type==='savings'?'<span class="account-tag">savings</span>':'<span class="account-tag">spendable</span>')+'</span></div>').join('')}
+    </div>
+    <label>Add new account</label>
+    <input type="text" id="newAccName" placeholder="e.g. Cash Wallet">
+    <label>Type</label>
+    <select id="newAccType">
+      <option value="spendable">Spendable (counts toward Available to spend)</option>
+      <option value="savings">Savings (kept separate)</option>
+    </select>
+    <button class="btn small secondary" id="addAccBtn" style="margin-top:10px;">+ Add Account</button>
+  </div>
+
+  <div class="card">
+    <h2>Google Sheet Backup</h2>
+    <label>Apps Script Web App URL</label>
+    <input type="text" id="sheetUrl" value="${DATA.sheetUrl||''}" placeholder="https://script.google.com/macros/s/.../exec">
+    <button class="btn small secondary" id="saveSheetBtn" style="margin-top:10px;">Save URL</button>
+    <button class="btn small" id="resyncBtn" style="margin-top:10px;">Resync all to Sheet</button>
+  </div>
+
+  <div class="card">
+    <h2>Export</h2>
+    <button class="btn secondary" id="csvBtn">Download CSV</button>
+  </div>
+
+  <div class="card">
+    <h2>Reset</h2>
+    <button class="btn danger" id="resetBtn">Clear all data</button>
+  </div>
+  `;
+}
+
+function syncToSheet(t){
+  if(!DATA.sheetUrl) return;
+  const acc = DATA.accounts.find(a=>a.id===t.account);
+  const toAcc = t.toAccount ? DATA.accounts.find(a=>a.id===t.toAccount) : null;
+  fetch(DATA.sheetUrl, {
+    method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain'},
+    body: JSON.stringify({
+      date:t.date, type:t.type, fund:t.fund, account:acc?acc.name:'', toAccount:toAcc?toAcc.name:'',
+      category:t.category, amount:t.amount, fee:t.fee||0, note:t.note||''
+    })
+  }).catch(()=>{});
+}
+
+function downloadCSV(){
+  let csv = 'Date,Type,Fund,Account,ToAccount,Category,Amount,Fee,Note\n';
+  DATA.transactions.forEach(t=>{
+    const acc = DATA.accounts.find(a=>a.id===t.account);
+    const toAcc = t.toAccount ? DATA.accounts.find(a=>a.id===t.toAccount) : null;
+    csv += [t.date, t.type, t.fund||'', acc?acc.name:'', toAcc?toAcc.name:'', t.category, t.amount, t.fee||0, (t.note||'').replace(/,/g,';')].join(',') + '\n';
+  });
+  const blob = new Blob([csv], {type:'text/csv'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href=url; a.download='money-hq-export.csv'; a.click();
+  URL.revokeObjectURL(url);
+}
+
+function attachHandlers(){
+  document.querySelectorAll('.nav button').forEach(b=>{
+    b.onclick = ()=>{ if(currentTab!=='add' || confirm_leave_edit()) { currentTab=b.dataset.tab; editingTxnId=null; render(); } };
+  });
+
+  if(currentTab==='add'){
+    document.querySelectorAll('[data-type]').forEach(b=>{
+      b.onclick = ()=>{ addType=b.dataset.type; render(); };
+    });
+    document.querySelectorAll('[data-fund]').forEach(b=>{
+      b.onclick = ()=>{ addFund=b.dataset.fund; render(); };
+    });
+    document.querySelectorAll('[data-chip]').forEach(b=>{
+      b.onclick = ()=>{ document.getElementById('note').value = b.dataset.chip; };
+    });
+
+    const cancelBtn = document.getElementById('cancelEditBtn');
+    if(cancelBtn) cancelBtn.onclick = ()=>{ editingTxnId=null; currentTab='history'; render(); };
+
+    const parseBtn = document.getElementById('parseBtn');
+    if(parseBtn) parseBtn.onclick = ()=>{
+      const text = document.getElementById('smsBox').value;
+      if(!text.trim()) return;
+      const r = parseMomoSMS(text);
+      const guessedCat = guessCategory((r.reference||'') + ' ' + (r.name||''));
+      if(r.direction){ addType = r.direction; }
+      render();
+      setTimeout(()=>{
+        document.getElementById('smsBox').value = text;
+        if(r.amount!=null) document.getElementById('amount').value = r.amount;
+        if(r.fee!=null && document.getElementById('fee')) document.getElementById('fee').value = r.fee;
+        if(guessedCat && document.getElementById('category')) document.getElementById('category').value = guessedCat;
+        if(r.name && document.getElementById('note')) document.getElementById('note').value = r.name;
+        if(r.balance!=null) document.getElementById('statedBalance').value = r.balance;
+        document.getElementById('parseResult').innerHTML =
+          '<div class="parsed-box">Guessed: '+(r.direction||'unclear')+' \u00B7 amount '+(r.amount!=null?fmt(r.amount):'?')+
+          (r.fee!=null?' \u00B7 fee '+fmt(r.fee):'')+
+          (r.balance!=null?' \u00B7 MoMo balance after: '+fmt(r.balance):'')+
+          (guessedCat?' \u00B7 category guess: '+guessedCat:'')+
+          '<br><span style="opacity:0.65">Double-check the fields below before saving.</span></div>';
+      }, 0);
+    };
+
+    const saveBtn = document.getElementById('saveTxnBtn');
+    if(saveBtn) saveBtn.onclick = async ()=>{
+      const amount = parseFloat(document.getElementById('amount').value);
+      if(!amount || amount<=0){ alert('Enter an amount first'); return; }
+      const fee = document.getElementById('fee') ? (parseFloat(document.getElementById('fee').value)||0) : 0;
+      const note = document.getElementById('note').value;
+      const dateVal = document.getElementById('txnDate').value;
+      const isoDate = dateVal ? new Date(dateVal).toISOString() : new Date().toISOString();
+      const statedBalanceRaw = document.getElementById('statedBalance').value;
+      const statedBalance = statedBalanceRaw ? parseFloat(statedBalanceRaw) : null;
+
+      let account, toAccount, category;
+      if(addType==='transfer'){
+        account = document.getElementById('fromAcc').value;
+        toAccount = document.getElementById('toAcc').value;
+        category = 'Account Transfer';
+        if(account===toAccount){ alert('Pick two different accounts'); return; }
+      } else {
+        account = document.getElementById('fromAcc').value;
+        category = document.getElementById('category').value;
+      }
+
+      if(editingTxnId){
+        const idx = DATA.transactions.findIndex(t=>t.id===editingTxnId);
+        if(idx>-1){
+          DATA.transactions[idx] = { ...DATA.transactions[idx], type:addType, fund:addFund, account, toAccount, category, amount, fee, note, date:isoDate };
+        }
+        editingTxnId = null;
+      } else {
+        let txn = { id: uid(), date: isoDate, type: addType, fund: addFund, fee, note, account, toAccount, category, amount };
+        DATA.transactions.push(txn);
+        if(statedBalance!=null){
+          const computed = getAccountBalance(txn.account);
+          txn.balanceCheck = {stated: statedBalance, computed, diff: computed - statedBalance};
+        }
+        DATA.lastUsed = {account: txn.account, fund: addFund};
+        syncToSheet(txn);
+      }
+
+      await saveData();
+      currentTab='dashboard';
+      render();
+    };
+  }
+
+  if(currentTab==='history' || currentTab==='dashboard'){
+    document.querySelectorAll('[data-del]').forEach(b=>{
+      b.onclick = async ()=>{
+        if(!confirm('Delete this transaction?')) return;
+        DATA.transactions = DATA.transactions.filter(t=>t.id!==b.dataset.del);
+        await saveData();
+        render();
+      };
+    });
+    document.querySelectorAll('[data-edit]').forEach(b=>{
+      b.onclick = ()=>{
+        const t = DATA.transactions.find(x=>x.id===b.dataset.edit);
+        if(!t) return;
+        editingTxnId = t.id;
+        addType = t.type;
+        addFund = t.fund;
+        currentTab = 'add';
+        render();
+      };
+    });
+  }
+
+  if(currentTab==='settings'){
+    const addAccBtn = document.getElementById('addAccBtn');
+    if(addAccBtn) addAccBtn.onclick = async ()=>{
+      const name = document.getElementById('newAccName').value.trim();
+      const type = document.getElementById('newAccType').value;
+      if(!name) return;
+      DATA.accounts.push({id:'acc_'+Date.now(), name, type});
+      await saveData();
+      render();
+    };
+    const saveSheetBtn = document.getElementById('saveSheetBtn');
+    if(saveSheetBtn) saveSheetBtn.onclick = async ()=>{
+      DATA.sheetUrl = document.getElementById('sheetUrl').value.trim();
+      await saveData();
+      alert('Sheet URL saved');
+    };
+    const resyncBtn = document.getElementById('resyncBtn');
+    if(resyncBtn) resyncBtn.onclick = ()=>{
+      if(!DATA.sheetUrl){ alert('Add a Sheet URL first'); return; }
+      DATA.transactions.forEach(t=>syncToSheet(t));
+      alert('Resync sent \u2014 check your Sheet in a moment');
+    };
+    const csvBtn = document.getElementById('csvBtn');
+    if(csvBtn) csvBtn.onclick = downloadCSV;
+    const resetBtn = document.getElementById('resetBtn');
+    if(resetBtn) resetBtn.onclick = async ()=>{
+      if(!confirm('This clears everything. Are you sure?')) return;
+      DATA = JSON.parse(JSON.stringify(DEFAULT_DATA));
+      await saveData();
+      render();
+    };
+  }
+}
+
+function confirm_leave_edit(){
+  if(!editingTxnId) return true;
+  return confirm('Discard this edit?');
+}
+
+loadData();
+</script>
+</body>
+</html>
