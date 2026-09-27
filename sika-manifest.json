@@ -1,0 +1,12 @@
+{
+  "name": "Sika Ledger",
+  "short_name": "Sika Ledger",
+  "start_url": "./sika-ledger.html",
+  "display": "standalone",
+  "background_color": "#12160E",
+  "theme_color": "#12160E",
+  "icons": [
+    { "src": "icon-sika-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-sika-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
